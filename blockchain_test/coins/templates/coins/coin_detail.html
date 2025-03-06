@@ -1,0 +1,40 @@
+{% extends "coins/base.html" %}
+
+{% block title %}{{ coin.title }}{% endblock %}
+
+{% block content %}
+<h2>{{ coin.title }} ({{ coin.ticker }})</h2>
+
+<button id="getBlockBtn" class="btn btn-success">Get height block</button>
+<p id="blockHeight"></p>
+
+<hr>
+
+<form id="balanceForm">
+    <label for="walletAddress">Input address wallet:</label>
+    <input type="text" id="walletAddress" class="form-control" required>
+    <button type="submit" class="btn btn-info mt-2">Check balance</button>
+</form>
+<p id="walletBalance"></p>
+
+<script>
+document.getElementById("getBlockBtn").addEventListener("click", function() {
+    fetch("{% url 'get_block' 'karbo' %}")
+        .then(response => response.json())
+        .then(data => document.getElementById("blockHeight").innerText = "Current block: " + data.height);
+});
+
+document.getElementById("balanceForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const address = document.getElementById("walletAddress").value;
+    fetch("{% url 'get_balance' 'karbo' %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: address })
+    })
+    .then(response => response.json())
+    .then(data => document.getElementById("walletBalance").innerText = "Balance: " + data.balance);
+});
+</script>
+
+{% endblock %}
