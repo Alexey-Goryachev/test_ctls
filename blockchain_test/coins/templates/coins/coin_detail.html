@@ -19,7 +19,7 @@
 
 <script>
 document.getElementById("getBlockBtn").addEventListener("click", function() {
-    fetch("{% url 'get_block' 'karbo' %}")
+    fetch("{% url 'services:get_block' 'karbo' %}")
         .then(response => response.json())
         .then(data => document.getElementById("blockHeight").innerText = "Current block: " + data.height);
 });
@@ -27,7 +27,7 @@ document.getElementById("getBlockBtn").addEventListener("click", function() {
 document.getElementById("balanceForm").addEventListener("submit", function(event) {
     event.preventDefault();
     const address = document.getElementById("walletAddress").value;
-    fetch("{% url 'get_balance' 'karbo' %}", {
+    fetch("{% url 'services:get_balance' 'karbo' %}", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ address: address })

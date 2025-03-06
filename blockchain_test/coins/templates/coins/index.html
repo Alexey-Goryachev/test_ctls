@@ -1,13 +1,13 @@
 {% extends "coins/base.html" %}
 
-{% block title %}Список монет{% endblock %}
+{% block title %}Coins list{% endblock %}
 
 {% block content %}
-<h2>Список доступных монет</h2>
+<h2>List avaible coins</h2>
 <ul class="list-group">
     {% for coin in coins %}
         <li class="list-group-item">
-            <a href="{% url 'coin_detail' coin.ticker %}" class="btn btn-primary">{{ coin.title }} ({{ coin.ticker }})</a>
+            <a href="{% url 'coins:coin_detail' coin.ticker %}" class="btn btn-primary">{{ coin.title }} ({{ coin.ticker }})</a>
         </li>
     {% endfor %}
 </ul>

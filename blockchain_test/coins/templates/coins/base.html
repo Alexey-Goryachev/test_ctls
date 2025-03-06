@@ -12,12 +12,12 @@
     />
   </head>
   <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark text-center">
       <div class="container">
-        <a class="navbar-brand" href="{% url 'coin_list' %}">Crypto App</a>
+        <a class="navbar-brand mx-auto" href="{% url 'coins:coin_list' %}">Crypto App</a>
       </div>
     </nav>
 
-    <div class="container mt-4">{% block content %}{% endblock %}</div>
+    <div class="container-fluid mt-4 ms-3 text-start">{% block content %}{% endblock %}</div>
   </body>
 </html>
