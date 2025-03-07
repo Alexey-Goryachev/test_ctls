@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from blockchain_app import settings
+from coins.interface import Interface
 
 import requests
 
@@ -9,7 +10,7 @@ __all__ = ("KarboClient")
 
 
 
-class KarboClient:
+class KarboClient(Interface):
     '''
     Client for interactive with blockchain Karbo
     '''
