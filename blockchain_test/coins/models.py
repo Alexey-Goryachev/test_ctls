@@ -12,5 +12,7 @@ class Coin(models.Model):
 
     created_at = models.DateTimeField(verbose_name=("Created at"), auto_now_add=True)
 
+    color_coin = models.CharField(verbose_name="Coin Color", max_length=7, default="#000000")
+
     def __str__(self):
         return self.title or self.ticker

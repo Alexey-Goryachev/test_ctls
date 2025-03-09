@@ -126,4 +126,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-YAML_CONFIGS_DIR = os.getenv("YAML_CONFIGS_DIR", "/configs")
+YAML_CONFIGS_DIR = os.getenv("YAML_CONFIGS_DIR", "./configs")

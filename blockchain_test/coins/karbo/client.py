@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from blockchain_app import settings
 from coins.interface import Interface
+from blockchain_app import setting_coins as settings
 
 import requests
 
@@ -20,7 +21,7 @@ class KarboClient(Interface):
         Func for get current number block in blockchain
         '''
 
-        karbo_url = settings.krb.URL_WALLET
+        karbo_url = settings.karbo.URL_WALLET
 
         karbo_block_json = {
             "jsonrpc":"2.0",
@@ -41,7 +42,7 @@ class KarboClient(Interface):
         '''
         Return balance wallet in karbo unit
         '''
-        karbo_url = settings.krb.URL_WALLET
+        karbo_url = settings.karbo.URL_WALLET
 
         karbo_balance_json = {
             "jsonrpc":"2.0",
@@ -56,6 +57,6 @@ class KarboClient(Interface):
 
         request_get_balance =  requests.post(karbo_get_block_command, json=karbo_balance_json)
         karbo_balance_response = request_get_balance.json().get("result").get("available_balance")
-        karbo_balance_human = Decimal(karbo_balance_response) /(10 ** settings.krb.DECIMALS)
+        karbo_balance_human = Decimal(karbo_balance_response) /(10 ** settings.karbo.DECIMALS)
 
         return karbo_balance_human

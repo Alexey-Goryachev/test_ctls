@@ -11,30 +11,65 @@
 <hr>
 
 <form id="balanceForm">
+    {% csrf_token %}
     <label for="walletAddress">Input address wallet:</label>
     <input type="text" id="walletAddress" class="form-control" required>
     <button type="submit" class="btn btn-info mt-2">Check balance</button>
 </form>
 <p id="walletBalance"></p>
 
+<a href="{{ coin.explorer }}" class="btn btn-primary mt-2" target="_blank">
+    Open Explorer
+</a>
+
 <script>
-document.getElementById("getBlockBtn").addEventListener("click", function() {
-    fetch("{% url 'services:get_block' 'karbo' %}")
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+    document.getElementById("getBlockBtn").addEventListener("click", function() {
+        const ticker = "{{ coin.ticker|upper }}";  // Берем тикер монеты из контекста
+        fetch(`/api/block/${ticker}/`)  // Динамически формируем URL
+            .then(response => response.json())
+            .then(data => {
+                if (data.height) {
+                    document.getElementById("blockHeight").innerText = "Current block: " + data.height;
+                } else {
+                    document.getElementById("blockHeight").innerText = "Error fetching block height";
+                }
+            })
+            .catch(error => {
+                document.getElementById("blockHeight").innerText = "Request failed";
+                console.error("Error:", error);
+            });
+    });
+    
+    document.getElementById("balanceForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const ticker = "{{ coin.ticker|upper }}";  // Берем тикер монеты
+        const address = document.getElementById("walletAddress").value;
+        const csrfToken = getCSRFToken();
+        
+        fetch(`/api/balance/${ticker}/`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({ address: address })
+        })
         .then(response => response.json())
-        .then(data => document.getElementById("blockHeight").innerText = "Current block: " + data.height);
-});
-
-document.getElementById("balanceForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    const address = document.getElementById("walletAddress").value;
-    fetch("{% url 'services:get_balance' 'karbo' %}", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: address })
-    })
-    .then(response => response.json())
-    .then(data => document.getElementById("walletBalance").innerText = "Balance: " + data.balance);
-});
-</script>
-
+        .then(data => {
+            if (data.balance) {
+                document.getElementById("walletBalance").innerText = "Balance: " + data.balance;
+            } else {
+                document.getElementById("walletBalance").innerText = "Not fetching balance";
+            }
+        })
+        .catch(error => {
+            document.getElementById("walletBalance").innerText = "Request failed";
+            console.error("Error:", error);
+        });
+    });
+    </script>
+    
 {% endblock %}
