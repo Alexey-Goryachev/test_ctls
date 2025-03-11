@@ -80,3 +80,7 @@ class USDTPolygonClient(Interface):
         )
 
         return result
+    
+
+    def get_address(self) ->str:
+        pass

@@ -11,3 +11,7 @@ class Interface(ABC):
     @abstractmethod
     def get_balance(self, address: str) ->Decimal:
         pass
+
+    @abstractmethod
+    def get_address(self) ->str:
+        pass

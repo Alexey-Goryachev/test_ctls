@@ -22,13 +22,18 @@
     Open Explorer
 </a>
 
+<hr>
+
+<button id="getAddressBtn" class="btn btn-info">Get address wallet</address></button>
+<p id="addressWallet"></p>
+
 <script>
     function getCSRFToken() {
         return document.querySelector('[name=csrfmiddlewaretoken]').value;
     }
     document.getElementById("getBlockBtn").addEventListener("click", function() {
-        const ticker = "{{ coin.ticker|upper }}";  // Берем тикер монеты из контекста
-        fetch(`/api/block/${ticker}/`)  // Динамически формируем URL
+        const ticker = "{{ coin.ticker|upper }}";
+        fetch(`/api/block/${ticker}/`)
             .then(response => response.json())
             .then(data => {
                 if (data.height) {
@@ -45,9 +50,10 @@
     
     document.getElementById("balanceForm").addEventListener("submit", function(event) {
         event.preventDefault();
-        const ticker = "{{ coin.ticker|upper }}";  // Берем тикер монеты
+        const ticker = "{{ coin.ticker|upper }}";
         const address = document.getElementById("walletAddress").value;
         const csrfToken = getCSRFToken();
+        const balanceText = document.getElementById("walletBalance");
         
         fetch(`/api/balance/${ticker}/`, {
             method: "POST",
@@ -57,18 +63,39 @@
             },
             body: JSON.stringify({ address: address })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.balance) {
-                document.getElementById("walletBalance").innerText = "Balance: " + data.balance;
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status === 200 && body.balance !== undefined) {
+                balanceText.innerText = "Balance: " + body.balance;
+            } else if (status === 400 && body.address) {
+                let explorerUrl = body.address.explorer_url || "{{ coin.explorer }}";
+                balanceText.innerHTML = `❌ ${body.address.message}<br>
+                    <a href="${explorerUrl}" target="_blank">Check correct format here</a>`;
             } else {
-                document.getElementById("walletBalance").innerText = "Not fetching balance";
+                balanceText.innerText = "Balance not found";
             }
         })
         .catch(error => {
             document.getElementById("walletBalance").innerText = "Request failed";
             console.error("Error:", error);
         });
+    });
+
+        document.getElementById("getAddressBtn").addEventListener("click", function() {
+        const ticker = "{{ coin.ticker|upper }}";
+        fetch(`/api/address/${ticker}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.address) {
+                    document.getElementById("addressWallet").innerText = "Current address: " + data.address;
+                } else {
+                    document.getElementById("addressWallet").innerText = "Error fetching block height";
+                }
+            })
+            .catch(error => {
+                document.getElementById("addressWallet").innerText = "Request failed";
+                console.error("Error:", error);
+            });
     });
     </script>
     

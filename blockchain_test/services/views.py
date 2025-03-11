@@ -6,7 +6,7 @@ from coins.karbo.client import KarboClient
 from coins.polygon.client import PolygonClient
 from coins.usdt_polygon.client import USDTPolygonClient
 from coins.tron.client import TronClient
-from coins.serializers import BalanceSerializer, BlockHeightSerializer
+from coins.serializers import BalanceSerializer
 
 # Create your views here.
 karbo_client = KarboClient()
@@ -47,12 +47,34 @@ class BalanceView(APIView):
             if not client:
                 return Response({"error": "Unknown coin"}, status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = BalanceSerializer(data=request.data)
+            serializer = BalanceSerializer(data=request.data, context={"ticker": ticker})
             if serializer.is_valid():
                 address = serializer.validated_data["address"]
-                balance = client.get_balance(address)
+                if isinstance(client, TronClient):
+                    balance = async_to_sync(client.get_balance)(address)
+                else:    
+                    balance = client.get_balance(address)
                 return Response({"balance": balance}, status=status.HTTP_200_OK)
             else:
+                print(f"Response: {serializer.errors}")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetAddressView(APIView):
+    def get(self, request, ticker: str) -> Response:
+        try:
+            client = CLIENTS.get(ticker.upper())
+            if not client:
+                return Response({"error": "Unknown coin"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if isinstance(client, KarboClient):
+                address = client.get_address()
+
+            else:
+                address = "This functional hasn't unavaibled yet"
+
+            return Response({"address": address}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)

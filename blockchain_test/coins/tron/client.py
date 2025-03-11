@@ -27,38 +27,18 @@ class TronClient(Interface):
         except Exception as e:
             raise ValueError(f"Get_height_block_tron: {e}")
 
-    def get_balance(self, address: str) -> Decimal:
+    async def get_balance(self, address: str) -> Decimal:
         """
         Return balance wallet in TRX unit
         """
-        apikey = settings.polygon.API_KEY
-        nonerequest = 0
+        apikey = settings.tron.API_KEY
+        client = AsyncTron(AsyncHTTPProvider(api_key=apikey))
         try:
-            while nonerequest == 0:
-                time.sleep(1)
-                response_balance = requests.get(
-                    "https://api.polygonscan.com/api?module=account&action=balance&address="
-                    + str(address)
-                    + "&tag=latest&apikey="
-                    + apikey
-                )
-
-                response_balance_json = response_balance.json()
-
-                if (
-                    (str(response_balance_json.get("status")) == "1")
-                    and (str(response_balance_json.get("message")) == "OK")
-                    and (str(response_balance_json.get("result") != "None"))
-                ):
-                    polygon_balance = int(response_balance_json.get("result"))
-                    nonerequest = 1
-                else:
-                    nonerequest = 0
+            tron_balance = await client.get_account_balance(addr=address)
+            return tron_balance
         except Exception as e:
-            raise ValueError(f"Get_balance_polygon: {e}")
-
-        result = Decimal(
-            str((float(polygon_balance)) / (10**settings.polygon.DECIMALS))
-        )
-
-        return result
+            raise ValueError(f"Get_balance_tron: {e}")
+        
+    async def get_address(self) ->str:
+        pass
+        
