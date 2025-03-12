@@ -1,0 +1,12 @@
+services:
+  django:
+    build: .
+    environment:
+      - PYTHONPATH=/app/blockchain_test
+    command: gunicorn blockchain_app.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./configs:/app/configs
+      - ./blockchain_test/db.sqlite3:/app/blockchain_test/db.sqlite3
+      - ./staticfiles:/app/staticfiles 
+    ports:
+      - "8000:8000"

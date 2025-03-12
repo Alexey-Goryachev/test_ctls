@@ -1,0 +1,18 @@
+{% extends "coins/base.html" %} {% block title %}Coins list{% endblock %}
+{%block content %}
+{% load static %}
+<h2>List avaible coins</h2>
+<link rel="stylesheet" href="{% static 'coins/style.css' %}">
+<ul class="list-group">
+  {% for coin in coins %}
+  <li class="list-group-item">
+    <a
+      href="{% url 'coins:coin_detail' coin.ticker %}"
+      class="btn coin-button"
+      style="background-color: {{ coin.color_coin }};">
+      {{ coin.title }} ({{ coin.ticker }})
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
