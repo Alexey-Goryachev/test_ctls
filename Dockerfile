@@ -23,7 +23,11 @@ COPY . .
 ENV PYTHONPATH="/app/blockchain_test"
 
 # Собираем статические файлы
-RUN python blockchain_test/manage.py collectstatic --noinput
+RUN python /app/blockchain_test/manage.py collectstatic --noinput
+
+# Проводим миграции
+RUN python /app/blockchain_test/manage.py migrate --noinput
+
 
 # Открываем порт для Gunicorn
 EXPOSE 8000

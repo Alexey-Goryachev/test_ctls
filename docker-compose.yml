@@ -6,7 +6,7 @@ services:
     command: gunicorn blockchain_app.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./configs:/app/configs
-      - ./blockchain_test/db.sqlite3:/app/blockchain_test/db.sqlite3
-      - ./staticfiles:/app/staticfiles 
+      - ./db.sqlite3:/app/blockchain_test/db.sqlite3
+      - ./blockchain_test/staticfiles:/app/blockchain_test/staticfiles 
     ports:
       - "8000:8000"
